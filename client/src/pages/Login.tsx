@@ -27,7 +27,7 @@ const Login = () => {
           <h2 className="text-4xl font-semibold text-white mb-4">
             Welcome back to Instacart
           </h2>
-          <p className="text-white/60 font-serif text-xl max-w-sm mx-auto">
+          <p className="text-white/60 font-sans text-xl max-w-sm mx-auto">
             Fresh groceries and organic produce, delivered to your doorstep
           </p>
         </div>
