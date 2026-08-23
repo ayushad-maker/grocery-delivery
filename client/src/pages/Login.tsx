@@ -8,7 +8,7 @@ import {
   MailIcon,
   UserIcon,
 } from "lucide-react";
-import Banner from "../components/Banner";
+
 
 const Login = () => {
   const [isLoginState, setIsLoginState] = useState(true);
