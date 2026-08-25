@@ -1,6 +1,9 @@
+import AppPromoBanner from "../components/Home/AppPromoBanner";
 import Feature from "../components/Home/Feature";
+import Footer from "../components/Home/Footer";
 import Hero from "../components/Home/Hero";
 import HomeCategories from "../components/Home/HomeCategories";
+import NewsLetter from "../components/Home/NewsLetter";
 import PopularProducts from "../components/Home/PopularProducts";
 
 
@@ -11,6 +14,9 @@ const Home = () => {
       <Feature />
       <HomeCategories />
       <PopularProducts />
+      <AppPromoBanner />
+      <NewsLetter />
+      <Footer />
     </div>
   );
 };
