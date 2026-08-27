@@ -36,7 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(true);
 
   const addToCart = (product: Product, quantity = 1) => {
     setItems((prev) => {
