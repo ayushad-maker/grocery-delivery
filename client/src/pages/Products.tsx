@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categoriesData, dummyProducts } from "../assets/assets";
-import {
-  ChevronDown,
-  ChevronDownIcon,
-  Home,
-  SlidersHorizontal,
-} from "lucide-react";
+import { ChevronDown, Home, SlidersHorizontal } from "lucide-react";
+import ProductsCard from "../components/ProductsCard";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,11 +73,11 @@ const Products = () => {
           <main className="flex-1">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <div>
+              <div className="flex items-center justify-center gap-3">
                 <h1 className="text-2xl font-semibold text-app-green">
-                  {activityCategory ? activityCategory.name : "All Products"}
+                  {activityCategory ? activityCategory.name : "All Products"}:
                 </h1>
-                <p className="text-sm text-app-text-light mt-0.5">
+                <p className="text-sm text-app-text-light font mt-0.5">
                   {products.length} products found
                 </p>
               </div>
@@ -109,10 +105,57 @@ const Products = () => {
                     <option value="rating">Top-Rated</option>
                     <option value="name">A to Z</option>
                   </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-app-text-light pointer-events-none "/>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-app-text-light pointer-events-none " />
                 </div>
               </div>
             </div>
+
+            {/* Product Grid */}
+            {loading ? (
+              <p>Loading...</p>
+            ) : products.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-lg font-semibold text-app-green mb-2">
+                  No products found
+                </p>
+                <p className="text-sm text-app-text-light mb-4">
+                  Try adjusting your filters or search terms
+                </p>
+                <button
+                  onClick={clearFilters}
+                  className="px-5 py-2 text-sm font-medium bg-app-green text-white rounded-xl hover:bg-app-green-light transition-colors"
+                >
+                  Clear Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 xl:gap-8">
+                {products.map(
+                  (product) =>
+                    product.stock > 0 && (
+                      <ProductsCard key={product._id} product={product} />
+                    ),
+                )}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex-center gap-2 mt-16">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      updateFilter("page", String(i + 1));
+                      scrollTo(0, 0);
+                    }}
+                    className={`size-9  rounded-lg text-sm font-medium transition-colors ${page === i + 1 ? "bg-app-green text-white" : "bg-white text-app-text-light hover:bg-app-cream"}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
           </main>
         </div>
       </div>
