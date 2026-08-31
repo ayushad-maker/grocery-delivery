@@ -3,13 +3,15 @@ import { Link, useSearchParams } from "react-router-dom";
 import { categoriesData, dummyProducts } from "../assets/assets";
 import { ChevronDown, Home, SlidersHorizontal } from "lucide-react";
 import ProductsCard from "../components/ProductsCard";
+import Loading from "../components/Loading";
+import FilterPannel from "../components/FilterPannel";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [mobileFeaturesOpen, setMoileFeaturesOpen] = useState(false);
+  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
 
   const category = searchParams.get("category") || "";
   const organic = searchParams.get("organic") || "";
@@ -18,7 +20,7 @@ const Products = () => {
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
 
-  const fetchProducts = async () => {
+  const fetchProducts = () => {
     setLoading(true);
     setProducts(
       dummyProducts.filter((p) => p.category === category || category === ""),
@@ -65,7 +67,7 @@ const Products = () => {
         <div className="flex gap-8 xl:gap-10">
           <aside className="hidden lg:block w-64 shrink-0">
             <div className="bg-white rounded-2xl p-4 sticky top-24">
-              <p>Filter</p>
+              <FilterPannel categories={categoriesData} category={category} organic={organic} minPrice={minPrice} maxPrice={maxPrice} updateFilter={updateFilter} clearFilters={clearFilters} hasFilters={hasFilters}/>
             </div>
           </aside>
 
@@ -85,7 +87,7 @@ const Products = () => {
               <div className="flex flex-col lg:items-center gap-3">
                 {/* Mobile filter toggle */}
                 <button
-                  onClick={() => setMoileFeaturesOpen(true)}
+                  onClick={() => setMobileFeaturesOpen(true)}
                   className="lg:hidden flex items-center gap-2 px-3 py-2 text-sm bg-white rounded-xl border border-app-border hover:bg-app-cream transition-colors cursor-pointer "
                 >
                   <SlidersHorizontal />
@@ -112,7 +114,7 @@ const Products = () => {
 
             {/* Product Grid */}
             {loading ? (
-              <p>Loading...</p>
+              <Loading />
             ) : products.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-lg font-semibold text-app-green mb-2">
