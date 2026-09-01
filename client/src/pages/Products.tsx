@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categoriesData, dummyProducts } from "../assets/assets";
-import { ChevronDown, Home, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Home, SlidersHorizontal, XIcon } from "lucide-react";
 import ProductsCard from "../components/ProductsCard";
 import Loading from "../components/Loading";
 import FilterPannel from "../components/FilterPannel";
@@ -11,7 +11,7 @@ const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
+  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(true);
 
   const category = searchParams.get("category") || "";
   const organic = searchParams.get("organic") || "";
@@ -67,7 +67,16 @@ const Products = () => {
         <div className="flex gap-8 xl:gap-10">
           <aside className="hidden lg:block w-64 shrink-0">
             <div className="bg-white rounded-2xl p-4 sticky top-24">
-              <FilterPannel categories={categoriesData} category={category} organic={organic} minPrice={minPrice} maxPrice={maxPrice} updateFilter={updateFilter} clearFilters={clearFilters} hasFilters={hasFilters}/>
+              <FilterPannel
+                categories={categoriesData}
+                category={category}
+                organic={organic}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                updateFilter={updateFilter}
+                clearFilters={clearFilters}
+                hasFilters={hasFilters}
+              />
             </div>
           </aside>
 
@@ -77,7 +86,7 @@ const Products = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center justify-center gap-3">
                 <h1 className="text-2xl font-semibold text-app-green">
-                  {activityCategory ? activityCategory.name : "All Products"}:
+                  {activityCategory ? activityCategory.name : "All Categories"}:
                 </h1>
                 <p className="text-sm text-app-text-light font mt-0.5">
                   {products.length} products found
@@ -161,6 +170,41 @@ const Products = () => {
           </main>
         </div>
       </div>
+
+      {/* Mobile filters Modal */}
+      {mobileFeaturesOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-50"
+            onClick={() => setMobileFeaturesOpen(false)}
+          />
+
+          <div className="fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl max-h-[80vh] overflow-y-auto animate-slide-in-up">
+            <div className="flex items-center justify-between p-4 border-b border-app-border">
+              <h3 className="text-lg font-semibold text-app-green">Filters</h3>
+              <button
+                onClick={() => setMobileFeaturesOpen(false)}
+                className="p-2 hover:bg-app-cream rounded-lg"
+              >
+                <XIcon className="size-5" />
+              </button>
+            </div>
+
+            <div>
+              <FilterPannel
+                categories={categoriesData}
+                category={category}
+                organic={organic}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                updateFilter={updateFilter}
+                clearFilters={clearFilters}
+                hasFilters={hasFilters}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
