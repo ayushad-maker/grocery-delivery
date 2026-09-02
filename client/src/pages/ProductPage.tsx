@@ -10,6 +10,7 @@ import {
   LeafIcon,
   MinusIcon,
   PlusIcon,
+  ShoppingCartIcon,
   StarIcon,
 } from "lucide-react";
 
@@ -42,6 +43,21 @@ const ProductPage = () => {
   const displayQuantity = inCart ? cartItem.quantity : localQuantity;
 
   const categoryLabel = product.category.replace(/-/g, " ");
+
+  const handleMinus = () => {
+    if (inCart) {
+      if (cartItem.quantity > 1)
+        updateQuantity(product._id, cartItem.quantity - 1);
+      else removeCart(product._id);
+    } else {
+      setLoacalQuantity(Math.max(1, localQuantity - 1));
+    }
+  };
+
+  const handlePlus = () => {
+    if (inCart) updateQuantity(product._id, cartItem.quantity + 1);
+    else setLoacalQuantity(localQuantity + 1);
+  };
 
   return (
     <div className="min-h-screen">
@@ -184,6 +200,18 @@ const ProductPage = () => {
                     <PlusIcon className="w-4 h-4" />
                   </button>
                 </div>
+
+                {/* Add to Cart */}
+                <button
+                  onClick={() => {
+                    if (!inCart) addToCart(product, localQuantity);
+                  }}
+                  disabled={product.stock === 0}
+                  className={`w- py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 diabled:cursor-not-allowed active:scale-[0.98] ${inCart ? "bg-app-cream text-app-green border border-app-green " : "bg-app-orange text-white hover:bg-app-orange-dark"}`}
+                >
+                  <ShoppingCartIcon className="w-4 h-4" />
+                  {inCart ? "Added to Cart" : "Add to Cart"}
+                </button>
               </div>
             </div>
           </div>
