@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import type { Order } from "../types";
-import { dummyDashboardOrdersData } from "../assets/assets";
+import { dummyDashboardOrdersData, statusColors } from "../assets/assets";
 import Loading from "../components/Loading";
-import { PackageIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  ChevronLeft,
+  ChevronRightIcon,
+  PackageIcon,
+} from "lucide-react";
 
 const MyOrders = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -75,15 +80,58 @@ const MyOrders = () => {
             </Link>
           </div>
         ) : (
-          <div className="">
+          <div className="space-y-4">
             {orders.map((order) => (
               <Link
                 to={`/orders/${order._id}`}
                 className="block max-w-4xl bg-white rounded-2xl p-5 hover:shadow transition-all"
               >
                 {/* order id, date & status */}
+                <div className="flex items-start justify-between mb-3">
+                  {/* left */}
+                  <div>
+                    <p className="text-sm font-medium text-app-green">
+                      Order # {order._id.slice(-8).toUpperCase()}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <CalendarIcon className="size-3 text-app-text-light " />
+                      <span className="text-xs text-app-text-light">
+                        {new Date(order.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* right */}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`px-4 py-1 text-xs font-medium rounded-full ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}
+                    >
+                      {order.status}
+                    </span>
+                    <ChevronRightIcon className="size-4 text-app-text-light" />
+                  </div>
+                </div>
 
                 {/* Item thumbnails */}
+                <div>
+                  {order.items.slice(0, 4).map((item, i) => (
+                    <img
+                      key={i}
+                      src={item.image}
+                      alt={item.name}
+                      className="size-12 sm:size-16 rounded-lg object-cover border border-app-border"
+                    />
+                  ))}
+                  {order.items.length > 4 && (
+                    <div className="size-12 sm:size-16 rounded-lg bg-app-cream flex items-center text-xs font-semibold text-app-text-light">
+                      +{order.items.length - 4}{" "}
+                    </div>
+                  )}
+                </div>
 
                 {/* total items & price */}
               </Link>
