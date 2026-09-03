@@ -6,6 +6,7 @@ import { dummyProducts } from "../assets/assets";
 import Loading from "../components/Loading";
 import {
   ArrowLeftIcon,
+  ArrowRightIcon,
   HomeIcon,
   LeafIcon,
   MinusIcon,
@@ -13,6 +14,8 @@ import {
   ShoppingCartIcon,
   StarIcon,
 } from "lucide-react";
+import DummyReviewsSection from "../assets/DummyReviewsSection";
+import ProductsCard from "../components/ProductsCard";
 
 const ProductPage = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -190,13 +193,19 @@ const ProductPage = () => {
               <div className="flex items-center gap-3">
                 {/* Quantity */}
                 <div className="flex items-center border border-app-border rounded-xl overflow-hidden">
-                  <button className="p-3 hover:bg-app-cream transition-colors">
+                  <button
+                    onClick={handleMinus}
+                    className="p-3 hover:bg-app-cream transition-colors"
+                  >
                     <MinusIcon className="w-4 h-4" />
                   </button>
 
                   <span>{displayQuantity}</span>
 
-                  <button className="p-3 hover:bg-app-cream transition-colors">
+                  <button
+                    onClick={handlePlus}
+                    className="p-3 hover:bg-app-cream transition-colors"
+                  >
                     <PlusIcon className="w-4 h-4" />
                   </button>
                 </div>
@@ -207,7 +216,7 @@ const ProductPage = () => {
                     if (!inCart) addToCart(product, localQuantity);
                   }}
                   disabled={product.stock === 0}
-                  className={`w- py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 diabled:cursor-not-allowed active:scale-[0.98] ${inCart ? "bg-app-cream text-app-green border border-app-green " : "bg-app-orange text-white hover:bg-app-orange-dark"}`}
+                  className={`w-md py-3 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-50 diabled:cursor-not-allowed active:scale-[0.98] ${inCart ? "bg-app-cream text-app-green border border-app-green " : "bg-app-orange text-white hover:bg-app-orange-dark"}`}
                 >
                   <ShoppingCartIcon className="w-4 h-4" />
                   {inCart ? "Added to Cart" : "Add to Cart"}
@@ -218,9 +227,35 @@ const ProductPage = () => {
         </div>
 
         {/* Customer Reviews */}
-        <div></div>
+        <div>
+          {product.reviewCount > 0 && <DummyReviewsSection product={product} />}
+        </div>
 
         {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-12 mb-44">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-semibold">Related Products</h2>
+                <p className="text-sm text-app-text-light mt-1">
+                  More from {categoryLabel}
+                </p>
+              </div>
+              <Link
+                className="text-sm font-semibold text-app-orange hover:text-app-orange-dark flex items-center gap-1 transition-colors"
+                to={`/products?category=${product.category}`}
+              >
+                View All <ArrowRightIcon className="size-4"/>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 xl:gap-8">
+              {relatedProducts.slice(0, 5).map((rp) => (
+                <ProductsCard key={rp._id} product={rp} />
+              ))}
+            </div>
+          </section>
+        )}
         <div></div>
       </div>
     </div>
