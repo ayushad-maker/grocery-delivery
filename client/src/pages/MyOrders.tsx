@@ -6,7 +6,6 @@ import { dummyDashboardOrdersData, statusColors } from "../assets/assets";
 import Loading from "../components/Loading";
 import {
   CalendarIcon,
-  ChevronLeft,
   ChevronRightIcon,
   PackageIcon,
 } from "lucide-react";
@@ -134,6 +133,10 @@ const MyOrders = () => {
                 </div>
 
                 {/* total items & price */}
+                <div className="flex justify-between items-center pt-3 text-sm">
+                  <span className="text-black font-semibold">{orders.length} items</span>
+                  <span className="font-semibold text-app-green">{currency} {order.total.toFixed(2)}</span>
+                </div>
               </Link>
             ))}
           </div>
