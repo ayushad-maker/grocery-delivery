@@ -4,6 +4,7 @@ import { dummyAddressData } from "../assets/assets";
 import { MapPinIcon, PlusIcon } from "lucide-react";
 import Loading from "../components/Loading";
 import AddressCard from "../components/AddressCard";
+import AddressForm from "../components/AddressForm";
 
 const Addresses = () => {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -68,7 +69,7 @@ const Addresses = () => {
           <button
             onClick={() => {
               setShowForm(true);
-              resetForm();
+              console.log("address button is clicked")
             }}
             className="px-4 py-2 bg-app-green text-white text-sm  rounded-2xl font-semibold hover:bg-app-green-light transition-colors flex items-center gap-2 "
           >
@@ -77,6 +78,7 @@ const Addresses = () => {
         </div>
 
         {/* Form Modeling  */}
+        {showForm && <AddressForm resetForm={resetForm} handleSubmit={handleSubmit} form={form} setForm={setForm} editingId={editingId}/>}
 
         {/* Address labeling */}
 
