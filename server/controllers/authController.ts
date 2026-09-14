@@ -25,7 +25,7 @@ const getAdminStatus = (email: string | null | undefined): boolean => {
 
 // POST /api/auth/register
 
-export const Register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
@@ -91,7 +91,7 @@ export const login = async (req: Request, res: Response) => {
 
     const userData: any = { ...user };
     delete userData.password;
-    userData.isAdmin = getAdminStatus(email);
+    userData.isAdmin = getAdminStatus(userData.email);
 
     res.json({ user: userData, token });
   } catch (error) {
