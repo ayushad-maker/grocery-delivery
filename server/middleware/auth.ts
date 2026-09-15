@@ -6,7 +6,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer")) {
-      res
+      return res
         .status(401)
         .json({ message: "No token provided,authorization denied" });
     }
@@ -16,10 +16,11 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       id: string;
     };
     req.user = { id: decoded.id };
-
     next();
   } catch (error) {
-    console.log(error)
-    return res.status(401).json({message:"Token is not valid"})
+    console.log(error);
+    return res.status(401).json({ message: "Token is not valid" });
   }
 };
+
+export default auth
