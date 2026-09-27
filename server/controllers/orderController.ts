@@ -42,8 +42,8 @@ export const createOrder = async (req: Request, res: Response) => {
   });
 
   const subtotal = orderItems.reduce((sum: number, item: any) => {
-    return (sum + item.price * item.quantity, 0);
-  });
+    return sum + item.price * item.quantity;
+  }, 0);
   const deliveryFee = subtotal > 20 ? 0 : 1.99;
   const tax = Math.round(subtotal * 0.88 * 100) / 100;
   const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
@@ -83,3 +83,108 @@ export const createOrder = async (req: Request, res: Response) => {
     });
   }
 };
+
+// Get user's orders
+// Get /api/orders
+
+export const getUsersOrders = async (req: Request, res: Response) => {
+  const { status } = req.query;
+
+  const where: any = {
+    userId: req.user?.id,
+    NOT: [{ paymentMethod: "card", isPaid: false }],
+  };
+
+  if (status && status !== "all") {
+    where.status = status;
+  }
+
+  const orders = await prisma.order.findMany({
+    where,
+    include: { deliveryPartner: { select: { name: true, phone: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.json(orders);
+};
+
+// Get single order
+// Get /api/orders/:id
+
+export const getSingleOrder = async (req: Request, res: Response) => {
+  const order = await prisma.order.findFirst({
+    where: { id: req.params.id as string, userId: req.user?.id },
+    include: {
+      deliveryPartner: {
+        select: { name: true, phone: true, avatar: true, vehicleType: true },
+      },
+    },
+  });
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  res.json(order);
+};
+
+// Update order status (admin)
+// PUT /api/orders/:id/status
+
+export const updateOrderStatus = async (req: Request, res: Response) => {
+  const { status, note } = req.body;
+  const order = await prisma.order.findUnique({
+    where: { id: req.params.id as string },
+  });
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  const history = (
+    Array.isArray(order.statusHistory) ? order.statusHistory : []
+  ) as any[];
+  history.push({
+    status,
+    note: note || `Order ${status.toLowerCase()}`,
+    timestamp: new Date(),
+  });
+
+  const updatedOrder = await prisma.order.update({
+    where: { id: req.params.id as string },
+    data: { status, statusHistory: history },
+  });
+
+  res.json({ order: updatedOrder });
+};
+
+// Get all orders (admin)
+// GET /api/orders/all
+
+export const getAllOrders = async (req: Request, res: Response) => {
+  const orders = await prisma.order.findMany({
+    where: { NOT: [{ paymentMethod: "card", isPaid: false }] },
+    include: {
+      user: { select: { name: true, email: true } },
+      deliveryPartner: { select: { name: true, email: true, phone: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.json({ orders });
+};
+
+// Get order location
+// Get /api/orders/:id/location
+
+export const getOrderLocation = async (req: Request, res: Response) => {
+  const order = await prisma.order.findFirst({
+    where: { id: req.params.id as string, userId: req.user?.id },
+    select: { liveLocation: true, status: true },
+  });
+
+  if (!order) return res.status(404).json({ message: "Order not found" });
+  res.json({ liveLocation: order.liveLocation, status: order.status });
+};
+
+
