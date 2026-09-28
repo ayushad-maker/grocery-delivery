@@ -186,5 +186,3 @@ export const getOrderLocation = async (req: Request, res: Response) => {
   if (!order) return res.status(404).json({ message: "Order not found" });
   res.json({ liveLocation: order.liveLocation, status: order.status });
 };
-
-
