@@ -70,7 +70,7 @@ const sendMonthlyOffers = inngest.createFunction(
   {
     id: "send-monthly-offers",
     name: "Monthly Payday Offers",
-    triggers: [cron("0 10 1")],
+    triggers: [cron("0 10 1 * *")],
   },
   async ({}) => {
     const { deals, users } = await step.run(
@@ -251,9 +251,7 @@ const autoAssignRider = inngest.createFunction(
       }
 
       // Generate 6 digit OTP
-      const otp = Math.floor(
-        100000 + Math.random() * 900000
-      ).toString();
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
       // Get existing status history
       const history = Array.isArray(order.statusHistory)
@@ -289,10 +287,8 @@ const autoAssignRider = inngest.createFunction(
     });
 
     return result;
-  }
-);;
+  },
+);
 
 // Create an empty array where we'll export future Inngest functions
-export const functions = [checkLowStock, sendMonthlyOffers,autoAssignRider];
-
-
+export const functions = [checkLowStock, sendMonthlyOffers, autoAssignRider];
