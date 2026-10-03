@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma.js";
+import { inngest } from "../inngest/index.js";
 
 //create order
 // POST /api/orders
@@ -48,9 +49,15 @@ export const createOrder = async (req: Request, res: Response) => {
   const tax = Math.round(subtotal * 0.88 * 100) / 100;
   const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
 
+  if (!req.user?.id) {
+  return res.status(401).json({
+    message: "Unauthorized",
+  });
+}
+
   const order = await prisma.order.create({
     data: {
-      userId: req.user?.id,
+      userId: req.user.id,
       items: orderItems,
       shippingAddress,
       paymentMethod,
@@ -62,7 +69,7 @@ export const createOrder = async (req: Request, res: Response) => {
         {
           status: "Placed",
           note: "Order placed successfully.",
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
         },
       ],
     },
@@ -82,6 +89,13 @@ export const createOrder = async (req: Request, res: Response) => {
       data: { stock: { decrement: item.quantity } },
     });
   }
+
+  // Send stock update events for each product in the order 
+  for(const item of orderItems){
+    await inngest.send({name:"inventory/stock.updated",data:{productId:item.product}});
+  }
+
+  await inngest.send({name:"order/placed",data:{orderId:order.id}});
 };
 
 // Get user's orders
