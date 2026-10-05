@@ -15,7 +15,7 @@ export const getAddresses = async (req: Request, res: Response) => {
 // Add address
 // Post /api/addresses
 
-export const address = async (req: Request, res: Response) => {
+export const addAddress = async (req: Request, res: Response) => {
   const { label, address, city, state, zip, isDefault, lat, lng } = req.body;
 
   //Require coordinates
