@@ -144,7 +144,7 @@ const Products = () => {
                 {products.map(
                   (product) =>
                     product.stock > 0 && (
-                      <ProductsCard key={product._id} product={product} />
+                      <ProductsCard key={product.id} product={product} />
                     ),
                 )}
               </div>

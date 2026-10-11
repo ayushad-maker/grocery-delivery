@@ -15,10 +15,10 @@ const CheckoutAddress = ({ user, address, setAddress, setStep }: any) => {
           <div className="grid sm:grid-cols-2 gap-3">
             {user.addresses.map((addr: any) => (
               <div
-                key={addr._id || addr.label}
+                key={addr.id || addr.label}
                 onClick={() =>
                   setAddress({
-                    _id: addr._id,
+                    id: addr.id,
                     label: addr.label,
                     address: addr.address,
                     city: addr.city,

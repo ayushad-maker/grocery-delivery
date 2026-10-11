@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 interface User {
   name: string;
@@ -21,12 +22,7 @@ interface User {
 }
 
 const Navbar = () => {
-  const user: User | null = {
-    name: "John Doe",
-    email: "john@example.com",
-    isAdmin: true,
-  };
-
+  const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
@@ -41,6 +37,7 @@ const Navbar = () => {
   };
 
   const handleLogout = (): void => {
+    logout();
     setUserMenuOpen(false);
     navigate("/");
   };

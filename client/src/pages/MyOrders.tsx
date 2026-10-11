@@ -4,11 +4,7 @@ import { useCart } from "../context/CartContext";
 import type { Order } from "../types";
 import { dummyDashboardOrdersData, statusColors } from "../assets/assets";
 import Loading from "../components/Loading";
-import {
-  CalendarIcon,
-  ChevronRightIcon,
-  PackageIcon,
-} from "lucide-react";
+import { CalendarIcon, ChevronRightIcon, PackageIcon } from "lucide-react";
 
 const MyOrders = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -82,7 +78,7 @@ const MyOrders = () => {
           <div className="space-y-4">
             {orders.map((order) => (
               <Link
-                to={`/orders/${order._id}`}
+                to={`/orders/${order.id}`}
                 className="block max-w-4xl bg-white rounded-2xl p-5 hover:shadow transition-all"
               >
                 {/* order id, date & status */}
@@ -90,7 +86,7 @@ const MyOrders = () => {
                   {/* left */}
                   <div>
                     <p className="text-sm font-medium text-app-green">
-                      Order # {order._id.slice(-8).toUpperCase()}
+                      Order # {order.id.slice(-8).toUpperCase()}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <CalendarIcon className="size-3 text-app-text-light " />
@@ -134,8 +130,12 @@ const MyOrders = () => {
 
                 {/* total items & price */}
                 <div className="flex justify-between items-center pt-3 text-sm">
-                  <span className="text-black font-semibold">{orders.length} items</span>
-                  <span className="font-semibold text-app-green">{currency} {order.total.toFixed(2)}</span>
+                  <span className="text-black font-semibold">
+                    {orders.length} items
+                  </span>
+                  <span className="font-semibold text-app-green">
+                    {currency} {order.total.toFixed(2)}
+                  </span>
                 </div>
               </Link>
             ))}

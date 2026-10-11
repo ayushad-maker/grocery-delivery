@@ -40,13 +40,18 @@ const FlashDeals = () => {
             <h2 className="text-lg font-semibold text-app-green mb-2">
               No deals right now
             </h2>
-            <p className="text-sm text-app-text-light">Check back soon for amazing offers</p>
+            <p className="text-sm text-app-text-light">
+              Check back soon for amazing offers
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-5 mt-6 mb-5 p-4">
-            {products.map((product)=>product.stock > 0 && (
-              <ProductsCard key={product._id} product={product} />
-            ))}
+            {products.map(
+              (product) =>
+                product.stock > 0 && (
+                  <ProductsCard key={product.id} product={product} />
+                ),
+            )}
           </div>
         )}
       </div>

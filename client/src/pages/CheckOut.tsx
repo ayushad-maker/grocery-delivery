@@ -25,7 +25,7 @@ const CheckOut = () => {
   const [loading, setLoading] = useState(false);
 
   const [address, setAddress] = useState<Address>({
-    _id: "",
+    id: "",
     label: "Home",
     address: "",
     city: "",
@@ -61,7 +61,7 @@ const CheckOut = () => {
         user.addresses.find((a) => a.isDefault) || user.addresses[0];
 
       setAddress({
-        _id: defaultAddress._id,
+        id: defaultAddress.id,
         label: defaultAddress.label,
         address: defaultAddress.address,
         city: defaultAddress.city,
@@ -200,7 +200,6 @@ const CheckOut = () => {
                   {total.toFixed(2)}
                 </span>
               </div>
-
             </div>
           </div>
         </div>

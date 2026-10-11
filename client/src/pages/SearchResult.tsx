@@ -66,8 +66,8 @@ const SearchResult = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((prod)=>(
-              <ProductsCard key={prod._id} product={prod}/>
+            {products.map((prod) => (
+              <ProductsCard key={prod.id} product={prod} />
             ))}
           </div>
         )}

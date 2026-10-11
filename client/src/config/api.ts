@@ -9,7 +9,7 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem("auth_token");
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.set("Authorization", `Bearer ${token}`);
   }
 
   return config;
@@ -26,10 +26,7 @@ api.interceptors.response.use(
 
       const path = window.location.pathname;
 
-      if (
-        !path.includes("/login") &&
-        !path.includes("/register")
-      ) {
+      if (!path.includes("/login") && !path.includes("/register")) {
         window.location.href = "/login";
       }
     }

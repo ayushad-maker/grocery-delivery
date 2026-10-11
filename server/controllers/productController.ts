@@ -88,20 +88,19 @@ export const createProduct = async (req: Request, res: Response) => {
 
 //PUT /api/updateProduct/:id
 
-export const updateProduct = async (req:Request,res:Response)=>{
+export const updateProduct = async (req: Request, res: Response) => {
+  const product = await prisma.product.update({
+    where: { id: req.params.id as string },
+    data: req.body,
+  });
 
-    const product = await prisma.product.update({where:{id:req.params.id as string},data: req.body});
-
-    res.status(201).json({product});
-}
+  res.status(201).json({ product });
+};
 
 // DELETE /api/deleteProduct/:id
 
-export const deleteProduct = async (req:Request,res:Response)=>{
+export const deleteProduct = async (req: Request, res: Response) => {
+  await prisma.product.delete({ where: { id: req.params.id as string } });
 
-    await prisma.product.delete({where:{id:req.params.id as string}});
-
-    res.status(200).json({message:"Product is deleted successfully"});
-}
-
-
+  res.status(200).json({ message: "Product is deleted successfully" });
+};

@@ -46,7 +46,7 @@ const Addresses = () => {
       zip: add.zip,
       isDefault: false,
     });
-    setEditingId(add._id);
+    setEditingId(add.id);
     setShowForm(true);
   };
 
@@ -69,7 +69,7 @@ const Addresses = () => {
           <button
             onClick={() => {
               setShowForm(true);
-              console.log("address button is clicked")
+              console.log("address button is clicked");
             }}
             className="px-4 py-2 bg-app-green text-white text-sm  rounded-2xl font-semibold hover:bg-app-green-light transition-colors flex items-center gap-2 "
           >
@@ -78,7 +78,15 @@ const Addresses = () => {
         </div>
 
         {/* Form Modeling  */}
-        {showForm && <AddressForm resetForm={resetForm} handleSubmit={handleSubmit} form={form} setForm={setForm} editingId={editingId}/>}
+        {showForm && (
+          <AddressForm
+            resetForm={resetForm}
+            handleSubmit={handleSubmit}
+            form={form}
+            setForm={setForm}
+            editingId={editingId}
+          />
+        )}
 
         {/* Address labeling */}
 
@@ -97,8 +105,13 @@ const Addresses = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {addresses.map((addr)=>(
-                <AddressCard key={addr._id} addr={addr} onEditHandler={onEditHandler} setAddresses={setAddresses}/>
+              {addresses.map((addr) => (
+                <AddressCard
+                  key={addr.id}
+                  addr={addr}
+                  onEditHandler={onEditHandler}
+                  setAddresses={setAddresses}
+                />
               ))}
             </div>
           )}
