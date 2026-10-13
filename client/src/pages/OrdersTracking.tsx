@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Order } from "../types";
-import { dummyDashboardOrdersData } from "../assets/assets";
 import Loading from "../components/Loading";
 import { ArrowLeftIcon, MapIcon, MapPinIcon, PhoneIcon } from "lucide-react";
 import OrderOTP from "../components/OrderTracking/OrderOTP";
 import LiveMap from "../components/OrderTracking/LiveMap";
 import OrderTimeLine from "../components/OrderTracking/OrderTimeLine";
+import api from "../config/api";
 
 const OrdersTracking = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -20,13 +20,33 @@ const OrdersTracking = () => {
   } | null>(null);
 
   useEffect(() => {
-    setOrder(dummyDashboardOrdersData.find((o) => o.id === id) as any);
-    setLoading(false);
+    const fetchOrder = async () => {
+      setLoading(true);
+
+      try {
+        const { data } = await api.get(`/orders/${id}`);
+        setOrder(data);
+      } catch (error) {
+        console.error("Order fetch failed:", error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchOrder();
+    } else {
+      navigate("/orders");
+    }
   }, [id, navigate]);
 
   if (loading) return <Loading />;
   if (!order) {
-    <div className="flex items">Order Products First...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Order not found.
+      </div>
+    );
   }
 
   return (

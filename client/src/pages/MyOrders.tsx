@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import type { Order } from "../types";
-import { dummyDashboardOrdersData, statusColors } from "../assets/assets";
+import { statusColors } from "../assets/assets";
 import Loading from "../components/Loading";
 import { CalendarIcon, ChevronRightIcon, PackageIcon } from "lucide-react";
+import api from "../config/api";
+import toast from "react-hot-toast";
 
 const MyOrders = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -19,8 +21,18 @@ const MyOrders = () => {
   const { clearcart } = useCart();
 
   const fetchOrders = async () => {
-    setOrders(dummyDashboardOrdersData as any);
+    setLoading(true);
+    try {
+      const params = activeTab !== "all" ? `?status=${activeTab}` : "";
+      const { data } = await api.get(`/orders${params}`);
+      setOrders(data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
   };
+  console.log(orders);
 
   useEffect(() => {
     if (searchParams.get("clearCart")) {
@@ -113,7 +125,7 @@ const MyOrders = () => {
 
                 {/* Item thumbnails */}
                 <div>
-                  {order.items.slice(0, 4).map((item, i) => (
+                  {(order.items ?? []).slice(0, 4).map((item, i) => (
                     <img
                       key={i}
                       src={item.image}
@@ -121,9 +133,10 @@ const MyOrders = () => {
                       className="size-12 sm:size-16 rounded-lg object-cover border border-app-border"
                     />
                   ))}
-                  {order.items.length > 4 && (
+
+                  {(order.items ?? []).length > 4 && (
                     <div className="size-12 sm:size-16 rounded-lg bg-app-cream flex items-center text-xs font-semibold text-app-text-light">
-                      +{order.items.length - 4}{" "}
+                      +{(order.items ?? []).length - 4}
                     </div>
                   )}
                 </div>

@@ -50,10 +50,10 @@ export const createOrder = async (req: Request, res: Response) => {
   const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
 
   if (!req.user?.id) {
-  return res.status(401).json({
-    message: "Unauthorized",
-  });
-}
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
 
   const order = await prisma.order.create({
     data: {
@@ -90,12 +90,15 @@ export const createOrder = async (req: Request, res: Response) => {
     });
   }
 
-  // Send stock update events for each product in the order 
-  for(const item of orderItems){
-    await inngest.send({name:"inventory/stock.updated",data:{productId:item.product}});
+  // Send stock update events for each product in the order
+  for (const item of orderItems) {
+    await inngest.send({
+      name: "inventory/stock.updated",
+      data: { productId: item.product },
+    });
   }
 
-  await inngest.send({name:"order/placed",data:{orderId:order.id}});
+  await inngest.send({ name: "order/placed", data: { orderId: order.id } });
 };
 
 // Get user's orders
@@ -126,20 +129,38 @@ export const getUsersOrders = async (req: Request, res: Response) => {
 // Get /api/orders/:id
 
 export const getSingleOrder = async (req: Request, res: Response) => {
-  const order = await prisma.order.findFirst({
-    where: { id: req.params.id as string, userId: req.user?.id },
-    include: {
-      deliveryPartner: {
-        select: { name: true, phone: true, avatar: true, vehicleType: true },
+  try {
+    const order = await prisma.order.findFirst({
+      where: {
+        id: req.params.id as string,
+        userId: req.user?.id,
       },
-    },
-  });
+      include: {
+        deliveryPartner: {
+          select: {
+            name: true,
+            phone: true,
+            avatar: true,
+            vehicleType: true,
+          },
+        },
+      },
+    });
 
-  if (!order) {
-    return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    return res.json(order);
+  } catch (error) {
+    console.error("getSingleOrder error:", error);
+
+    return res.status(500).json({
+      message: "Failed to fetch order",
+    });
   }
-
-  res.json(order);
 };
 
 // Update order status (admin)
