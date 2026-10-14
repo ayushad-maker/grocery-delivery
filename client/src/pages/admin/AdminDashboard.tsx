@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Loading from "../../components/Loading";
 import { dummyAdminDashboardData, statusColors } from "../../assets/assets";
+import api from "../../config/api";
 
 interface Stats {
   totalOrders: number;
@@ -24,10 +25,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setStats(dummyAdminDashboardData);
-      setLoading(false);
-    }, 1000);
+    api
+      .get("/admin/status")
+      .then((res) => setStats(res.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const cards = stats
