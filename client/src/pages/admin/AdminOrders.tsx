@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import type { DeliveryPartner } from "../../types";
 import Loading from "../../components/Loading";
 import api from "../../config/api";
-import { data } from "react-router-dom";
 
 export default function AdminOrders() {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
