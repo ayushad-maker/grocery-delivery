@@ -7,7 +7,7 @@ import {
   AlertTriangleIcon,
 } from "lucide-react";
 import Loading from "../../components/Loading";
-import { dummyAdminDashboardData, statusColors } from "../../assets/assets";
+import { statusColors } from "../../assets/assets";
 import api from "../../config/api";
 
 interface Stats {
