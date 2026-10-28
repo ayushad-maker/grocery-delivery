@@ -152,31 +152,71 @@ export const cancelDelivery = async (req: Request, res: Response) => {
 // PUT /api/delivery/my-deliveries/:id/status
 
 export const UpdateDeliveryStatus = async (req: Request, res: Response) => {
-  const { status } = req.body;
-  const allowedStatus = ["Packed", "Out for delivery"];
+  try {
+    const { status } = req.body;
+    const orderId = req.params.id as string;
 
-  if (!allowedStatus.includes(status)) {
-    return res.status(400).json({ message: "Invalid status update" });
+    const allowedStatus = ["Packed", "Out for Delivery"];
+
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status update",
+      });
+    }
+
+    const order = await prisma.order.findFirst({
+      where: {
+        id: orderId,
+        deliveryPartnerId: req.partner?.id,
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Delivery not found",
+      });
+    }
+
+    // Validate the status transition
+    const validTransition =
+      (order.status === "Assigned" && status === "Packed") ||
+      (order.status === "Packed" && status === "Out for Delivery");
+
+    if (!validTransition) {
+      return res.status(400).json({
+        message: `Cannot change status from ${order.status} to ${status}`,
+      });
+    }
+
+    const history = Array.isArray(order.statusHistory)
+      ? [...(order.statusHistory as any[])]
+      : [];
+
+    history.push({
+      status,
+      note: `Status updated to ${status}`,
+      timestamp: new Date(),
+    });
+
+    const updatedOrder = await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        status,
+        statusHistory: history,
+      },
+    });
+
+    return res.json({
+      order: updatedOrder,
+      message: "Order status updated successfully",
+    });
+  } catch (error) {
+    console.error("Update delivery status error:", error);
+
+    return res.status(500).json({
+      message: "Failed to update delivery status",
+    });
   }
-
-  const order = await prisma.order.findUnique({
-    where: { id: req.params.id as string, deliveryPartnerId: req.partner?.id },
-  });
-
-  const history = order!.statusHistory as any[];
-
-  history.push({
-    status,
-    note: `status updated to ${status}`,
-    timestamp: new Date(),
-  });
-
-  const updateOrder = await prisma.order.update({
-    where: { id: order!.id },
-    data: { status, statusHistory: history },
-  });
-
-  res.json({ order: updateOrder, message: "order updated successfully" });
 };
 
 // update live location
@@ -200,5 +240,3 @@ export const updateliveLocation = async (req: Request, res: Response) => {
 
   res.json({ success: true });
 };
-
-

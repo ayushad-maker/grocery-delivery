@@ -6,6 +6,7 @@ import {
   getDeliveryDetail,
   loginPartner,
   updateliveLocation,
+  UpdateDeliveryStatus,
 } from "../controllers/deliveryController.js";
 import deliveryAuth from "../middleware/deliveryAuth.js";
 import { updateDeliveryPartner } from "../controllers/adminController.js";
@@ -32,10 +33,11 @@ deliveryPartnerRouter.put(
 deliveryPartnerRouter.put(
   "/my-deliveries/:id/status",
   deliveryAuth,
-  updateDeliveryPartner,
+  UpdateDeliveryStatus,
 );
+
 deliveryPartnerRouter.put(
-  "/my-deliveries/:id/status",
+  "/my-deliveries/:id/location",
   deliveryAuth,
   updateliveLocation,
 );
