@@ -9,7 +9,6 @@ import {
   UpdateDeliveryStatus,
 } from "../controllers/deliveryController.js";
 import deliveryAuth from "../middleware/deliveryAuth.js";
-import { updateDeliveryPartner } from "../controllers/adminController.js";
 
 const deliveryPartnerRouter = express.Router();
 
