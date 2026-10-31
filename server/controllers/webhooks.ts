@@ -30,16 +30,23 @@ export const stripeWebHook = async (request: Request, response: Response) => {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const paymentIntentId = paymentIntent.id;
 
-        // Getting Session Metadata
-
+        // Get Checkout Session
         const session = await stripe.checkout.sessions.list({
           payment_intent: paymentIntentId,
         });
 
-        const orderId = session.data[0].metadata as any;
+        const orderId = session.data[0]?.metadata?.orderId;
 
+        if (!orderId) {
+          console.log("Order ID not found in Stripe session metadata");
+          return response.status(400).json({
+            message: "Order ID missing",
+          });
+        }
+
+        console.log("Stripe Payment Intent:", paymentIntentId);
+        console.log("Stripe Order ID:", orderId);
         // Mark payment as Paid
-
         const paidOrder = await prisma.order.update({
           where: { id: orderId },
           data: { isPaid: true },
@@ -81,9 +88,15 @@ export const stripeWebHook = async (request: Request, response: Response) => {
           payment_intent: paymentIntentFailureId,
         });
 
-        const failureOrderId = (sessionFailure.data[0].metadata as any).orderId;
+        const failureOrderId = sessionFailure.data[0]?.metadata?.orderId;
 
-        await prisma.order.delete({ where: { id: failureOrderId } });
+        if (!failureOrderId) {
+          throw new Error("Order ID not found in Stripe metadata");
+        }
+
+        await prisma.order.delete({
+          where: { id: failureOrderId },
+        });
       }
 
       default:

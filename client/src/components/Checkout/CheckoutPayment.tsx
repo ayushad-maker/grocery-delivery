@@ -33,3 +33,4 @@ export default function CheckoutPayment({ setStep, paymentMethod, setPaymentMeth
         </div>
     )
 }
+   
