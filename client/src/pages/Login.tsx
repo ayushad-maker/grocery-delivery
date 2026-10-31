@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 const Login = () => {
   const [isLoginState, setIsLoginState] = useState(true);
@@ -19,7 +20,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
 
-  const handelSubmit = async (e: React.SubmitEvent) => {
+  const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -28,8 +29,14 @@ const Login = () => {
       } else {
         await register(name, email, password);
       }
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

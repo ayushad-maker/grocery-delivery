@@ -15,12 +15,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
-interface User {
-  name: string;
-  email: string;
-  isAdmin: boolean;
-}
-
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { cartCount, setIsCartOpen } = useCart();

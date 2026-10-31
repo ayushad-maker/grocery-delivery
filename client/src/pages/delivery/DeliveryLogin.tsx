@@ -4,6 +4,7 @@ import { heroSectionData } from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 export default function DeliveryLogin() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function DeliveryLogin() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -20,8 +21,14 @@ export default function DeliveryLogin() {
       localStorage.setItem("delivery-partner", JSON.stringify(data.partner));
       toast.success("Login Successfull");
       navigate("/delivery");
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import type { Product } from "../../types";
 import Loading from "../../components/Loading";
 import toast from "react-hot-toast";
 import api from "../../config/api";
+import { isAxiosError } from "axios";
 
 export default function AdminProducts() {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL || "$";
@@ -16,8 +17,14 @@ export default function AdminProducts() {
     try {
       const { data } = await api.get("/products");
       setProducts(data.products);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -36,10 +43,16 @@ export default function AdminProducts() {
       return;
     try {
       await api.delete(`/products/${id}`);
-      toast.success("Product marked as out of product.");
+      toast.success("Product marked as out of stock.");
       fetchProducts();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 

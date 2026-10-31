@@ -7,6 +7,8 @@ import OrderOTP from "../components/OrderTracking/OrderOTP";
 import LiveMap from "../components/OrderTracking/LiveMap";
 import OrderTimeLine from "../components/OrderTracking/OrderTimeLine";
 import api from "../config/api";
+import { isAxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const OrdersTracking = () => {
   const currency = import.meta.env.VITE_CURRENCY_SYMBOL;
@@ -26,11 +28,14 @@ const OrdersTracking = () => {
       try {
         const { data } = await api.get(`/orders/${id}`);
         setOrder(data);
-      } catch (error) {
-        console.error(
-          "Order fetch failed:",
-          error.response?.data || error.message,
-        );
+      } catch (error: unknown) {
+        if (isAxiosError<{ message?: string }>(error)) {
+          toast.error(error.response?.data?.message || error.message);
+        } else if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
@@ -66,7 +71,17 @@ const OrdersTracking = () => {
         if (data.status && data.status !== order.status) {
           setOrder((prev) => (prev ? { ...prev, status: data.status } : prev));
         }
-      } catch (error) {}
+      } catch (error: unknown) {
+        if (isAxiosError<{ message?: string }>(error)) {
+          toast.error(
+            error.response?.data?.message || "Failed to fetch the location.",
+          );
+        } else if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Failed to fetch the location.");
+        }
+      }
     };
     fetchLocation();
     const interval = setInterval(fetchLocation, 10000);

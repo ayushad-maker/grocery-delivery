@@ -9,6 +9,7 @@ import type { User } from "../types";
 import { useNavigate } from "react-router-dom";
 import api from "../config/api";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 interface AuthContextType {
   user: User | null;
@@ -49,8 +50,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("auth_user", JSON.stringify(data.user));
       toast.success("Login Successfull");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -67,8 +74,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("auth_token", data.token);
       toast.success("Registration successfull.");
       navigate("/");
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 

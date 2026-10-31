@@ -5,6 +5,7 @@ import { categoriesData } from "../../assets/assets";
 import Loading from "../../components/Loading";
 import api from "../../config/api";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 export default function AdminProductForm() {
   const { id } = useParams();
@@ -45,8 +46,14 @@ export default function AdminProductForm() {
             isOrganic: p.isOrganic,
           });
         }
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Failed to load data");
+      } catch (error: unknown) {
+        if (isAxiosError<{ message?: string }>(error)) {
+          toast.error(error.response?.data?.message || error.message);
+        } else if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
@@ -54,7 +61,7 @@ export default function AdminProductForm() {
     fetchData();
   }, [id, isEdit]);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     try {
@@ -91,8 +98,14 @@ export default function AdminProductForm() {
         toast.success("product created successfully");
       }
       navigate("/admin/products");
-    } catch (error: any) {
-      toast.error(error.response?.data.message || "Failed to save product");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setSaving(false);
     }

@@ -4,6 +4,7 @@ import type { DeliveryPartner } from "../../types";
 import Loading from "../../components/Loading";
 import api from "../../config/api";
 import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 export default function AdminDeliveryPartners() {
   const [partners, setPartners] = useState<DeliveryPartner[]>([]);
@@ -22,8 +23,14 @@ export default function AdminDeliveryPartners() {
     try {
       const { data } = await api.get("/admin/delivery-partners");
       setPartners(data.partners);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message);
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -33,7 +40,7 @@ export default function AdminDeliveryPartners() {
     fetchPartners();
   }, []);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     try {
@@ -41,17 +48,23 @@ export default function AdminDeliveryPartners() {
       toast.success("Partner onboarded successfully.");
       setShowForm(false);
       setForm({
-        name: " ",
-        email: " ",
-        password: " ",
-        phone: " ",
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
         vehicleType: "bike",
       });
       fetchPartners();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -60,8 +73,14 @@ export default function AdminDeliveryPartners() {
       await api.put(`/admin/delivery-partners/${id}`, { isActive: !isActive });
       toast.success(isActive ? "Partner Deactivated" : "Parter Activated");
       fetchPartners();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 

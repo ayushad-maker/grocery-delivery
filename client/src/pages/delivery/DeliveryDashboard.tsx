@@ -6,7 +6,7 @@ import DeliveryOrderCard from "./DeliveryOrderCard";
 import Loading from "../../components/Loading";
 import type { Order } from "../../types";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios,{ isAxiosError }  from "axios";
 
 const API_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
 
@@ -40,10 +40,14 @@ export default function DeliveryDashboard() {
         getAuthHeaders(),
       );
       setOrders(data.orders);
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to load deliveries",
-      );
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -115,8 +119,14 @@ export default function DeliveryDashboard() {
       );
       toast.success(`Status updated to ${status}`);
       fetchOrders();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -131,9 +141,15 @@ export default function DeliveryDashboard() {
       );
       toast.success("Delivery completed!");
       setOtpModal(null);
-      setOtp(" ");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message);
+      setOtp("");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -150,10 +166,16 @@ export default function DeliveryDashboard() {
       );
       toast.success("Delivery cancelled");
       setCancelModal(null);
-      setCancelReason(" ");
+      setCancelReason("");
       fetchOrders();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      if (isAxiosError<{ message?: string }>(error)) {
+        toast.error(error.response?.data?.message || error.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
